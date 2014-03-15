@@ -153,13 +153,14 @@ the command `python-cell-mode' to turn Python-Cell mode on."
          ;; When sending a region, add blank lines for non sent code so
          ;; backtraces remain correct.         
          (postline (make-string (1- line-num) ?\n)))
+    (message "Sending cell to shell: %s" heading)
     (python-shell-send-string (concat preline
                                       content
                                       postline))
     (unless noactivate
       (with-selected-window (selected-window)
         (switch-to-buffer-other-window (python-shell-get-shell-buffer-name))
-        (end-of-buffer)))))
+        (goto-char (point-max))))))
 
 ;; extracted from `python-shell-get-process`
 (defun python-shell-get-shell-buffer-name ()
