@@ -155,7 +155,11 @@ the command `python-cell-mode' to turn Python-Cell mode on."
          (postline (make-string (1- line-num) ?\n)))
     (python-shell-send-string (concat preline
                                       content
-                                      postline))))
+                                      postline))
+    (with-selected-window (selected-window)
+       (switch-to-buffer-other-window "*Python*")
+       (end-of-buffer))))
+    
 
 ;;; Cell Highlighting
 
