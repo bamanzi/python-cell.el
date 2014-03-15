@@ -125,7 +125,6 @@ the command `python-cell-mode' to turn Python-Cell mode on."
              (forward-char -1))
     (goto-char (point-max))))
 
-
 (defun python-shell-send-cell ()
   "Send the cell the cursor is in to the inferior Python process."
   (interactive)
@@ -134,17 +133,25 @@ the command `python-cell-mode' to turn Python-Cell mode on."
                                (point)))
          (end (save-excursion (python-end-of-cell)
                              (point)))
-               (content  (buffer-substring start end))
-
-         (preline "if True:\n")
-
          (line-num (line-number-at-pos start))
+
+         (content  (buffer-substring start end))
+         (heading (buffer-substring (save-excursion (goto-char start)
+                                                    (previous-line 1)
+                                                    (beginning-of-line)
+                                                    (point))
+                                    (+ start -1)))
+         (preline (concat "print '#exec cell on line "
+                          (format "%s" line-num)
+                          ": "
+                          heading "'\n"
+                          (if (string= (substring content 0 2) "  ")
+                              "if True:\n")))
+
          ;; When sending a region, add blank lines for non sent code so
          ;; backtraces remain correct.         
          (postline (make-string (1- line-num) ?\n)))
-    (python-shell-send-string (concat (if (string= (substring content 0 2) "  ")
-                                          preline
-                                        "")
+    (python-shell-send-string (concat preline
                                       content
                                       postline))))
 
