@@ -63,17 +63,6 @@
   "Overlay used by Python-Cell mode to highlight the current cell.")
 (make-variable-buffer-local 'python-cell-overlay)
 
-(defcustom python-cell-highlight-face 'python-cell
-  "Face with which to highlight the current cell in Python-Cell mode."
-  :type 'face
-  :group 'python-cell
-  :set (lambda (symbol value)
-   (set symbol value)
-   (dolist (buffer (buffer-list))
-     (with-current-buffer buffer
-       (when python-cell-overlay
-         (overlay-put python-cell-overlay 'face python-cell-highlight-face))))))
-
 (defcustom python-cell-sticky-flag nil
   "Non-nil means the Python-Cell mode highlight appears in all windows.
 Otherwise Python-Cell mode will highlight only in the selected
@@ -185,7 +174,7 @@ It should return nil if there's no region to be highlighted."
       (progn
         (unless python-cell-overlay
           (setq python-cell-overlay (make-overlay 1 1)) ; to be moved
-          (overlay-put python-cell-overlay 'face python-cell-highlight-face))
+          (overlay-put python-cell-overlay 'face 'python-cell-highlight-face))
         (overlay-put python-cell-overlay
                      'window (unless python-cell-sticky-flag (selected-window)))
         (python-cell-move python-cell-overlay))
