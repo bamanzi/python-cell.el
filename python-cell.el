@@ -137,10 +137,12 @@ the command `python-cell-mode' to turn Python-Cell mode on."
 
          (content  (buffer-substring start end))
          (heading (buffer-substring (save-excursion (goto-char start)
-                                                    (previous-line 1)
+                                                    (ignore-errors (previous-line 1))
                                                     (beginning-of-line)
                                                     (point))
-                                    (+ start -1)))
+                                    (if (> start 1)
+                                        (+ start -1)
+                                      start)))
          (preline (concat "print '#exec cell on line "
                           (format "%s" line-num)
                           ": "
