@@ -162,17 +162,31 @@ the command `python-cell-mode' to turn Python-Cell mode on."
         (switch-to-buffer-other-window (python-shell-get-shell-buffer-name))
         (goto-char (point-max))))))
 
-;; extracted from `python-shell-get-process`
 (defun python-shell-get-shell-buffer-name ()
+  (cond
+   ;; emacs-23's built-in python.el (emacs 23, 24.1, 24.2)
+   ((and (fboundp 'python-proc)
+         (string= (symbol-file 'run-python)
+                  (symbol-file 'python-proc)))
+    (process-buffer (python-proc)))
+   
+   ;; fganilla's python.el (emacs >= 24.3 or manually installed)
+   ;; extracted from `python-shell-get-process`
+   ((string= (symbol-file 'run-python)
+             (symbol-file 'python-shell-get-process-name))
     (let* ((dedicated-proc-name (python-shell-get-process-name t))
-         (dedicated-proc-buffer-name (format "*%s*" dedicated-proc-name))
-         (global-proc-name  (python-shell-get-process-name nil))
-         (global-proc-buffer-name (format "*%s*" global-proc-name))
-         (dedicated-running (comint-check-proc dedicated-proc-buffer-name))
-         (global-running (comint-check-proc global-proc-buffer-name)))
-    ;; Always prefer dedicated
-    (or (and dedicated-running dedicated-proc-buffer-name)
-        (and global-running global-proc-buffer-name))))
+           (dedicated-proc-buffer-name (format "*%s*" dedicated-proc-name))
+           (global-proc-name  (python-shell-get-process-name nil))
+           (global-proc-buffer-name (format "*%s*" global-proc-name))
+           (dedicated-running (comint-check-proc dedicated-proc-buffer-name))
+           (global-running (comint-check-proc global-proc-buffer-name)))
+      ;; Always prefer dedicated
+      (or (and dedicated-running dedicated-proc-buffer-name)
+          (and global-running global-proc-buffer-name))))
+   
+   ;; FIXME: other major mode
+   (t
+    "*Python*")))
 
 ;;; Cell Highlighting
 
