@@ -125,9 +125,9 @@ the command `python-cell-mode' to turn Python-Cell mode on."
              (forward-char -1))
     (goto-char (point-max))))
 
-(defun python-shell-send-cell ()
+(defun python-shell-send-cell (noactivate)
   "Send the cell the cursor is in to the inferior Python process."
-  (interactive)
+  (interactive "P")
   (let* (
          (start (save-excursion (python-beginning-of-cell)
                                (point)))
@@ -156,9 +156,10 @@ the command `python-cell-mode' to turn Python-Cell mode on."
     (python-shell-send-string (concat preline
                                       content
                                       postline))
-    (with-selected-window (selected-window)
-       (switch-to-buffer-other-window (python-shell-get-shell-buffer-name))
-       (end-of-buffer))))
+    (unless noactivate
+      (with-selected-window (selected-window)
+        (switch-to-buffer-other-window (python-shell-get-shell-buffer-name))
+        (end-of-buffer)))))
 
 ;; extracted from `python-shell-get-process`
 (defun python-shell-get-shell-buffer-name ()
